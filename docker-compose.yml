@@ -17,7 +17,7 @@ services:
         ports:
             - "8082:8082"
         build:
-            context: docker/app_go
+            context: src/app_go
         env_file:
             - "./env/sql.env"
         volumes:
