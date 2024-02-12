@@ -4,9 +4,12 @@ namespace App\Entity;
 
 use App\Repository\KeyRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: KeyRepository::class)]
 #[ORM\Table(name: '`key`')]
+#[UniqueEntity('code')]
+
 class Key
 {
     #[ORM\Id]
@@ -15,10 +18,10 @@ class Key
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $code = null;
+    private string $code;
 
     #[ORM\Column]
-    private ?bool $isUsed = null;
+    private bool $isUsed = false;
 
     public function getId(): ?int
     {
