@@ -12,10 +12,12 @@ class UrlService
         // save short and long URL to the key-value storage
 
         // return the short URL
+
+        return "abcd1234";
     }
 
     public function findLongUrl(): string
     {
-
+        return "https://100yuristov.com";
     }
 }
