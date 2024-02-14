@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Key;
+use App\Exceptions\EntityNotFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,6 +20,23 @@ class KeyRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Key::class);
+    }
+
+    public function fetchAvailableKey(): string
+    {
+        /** @var Key $keyRecord */
+        $keyRecord = $this->createQueryBuilder('k')
+            ->andWhere('k.isUsed = 0')
+            ->getQuery()
+            ->getOneOrNullResult();
+        if (!$keyRecord) {
+            throw new EntityNotFoundException('No available keys');
+        }
+        $keyRecord->setIsUsed(1);
+        $this->getEntityManager()->persist($keyRecord);
+        $this->getEntityManager()->flush();
+
+        return $keyRecord->getCode();
     }
 
 //    /**
