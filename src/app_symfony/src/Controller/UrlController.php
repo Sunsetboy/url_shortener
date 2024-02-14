@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
-
 
 use App\Exceptions\BadRequestException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,8 +16,7 @@ class UrlController extends AbstractController
 {
     public function __construct(
         private readonly UrlService $urlService,
-    )
-    {
+    ) {
     }
 
     #[Route('/api/url', methods: ['POST'])]

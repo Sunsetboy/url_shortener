@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service;
@@ -13,7 +14,6 @@ class UrlService
     public function __construct(
         private readonly KeyRepository  $keyRepository,
         private readonly CacheInterface $cacheInterface,
-
     ) {
 
     }
