@@ -4,11 +4,10 @@ namespace App\Entity;
 
 use App\Repository\KeyRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: KeyRepository::class)]
-#[ORM\Table(name: '`key`')]
-#[UniqueEntity('code')]
+#[ORM\Index(name: "is_used", columns: ["is_used"])]
+#[ORM\UniqueConstraint(name: "code", columns: ["code"])]
 
 class Key
 {

@@ -1,3 +1,4 @@
 docker/db_sql/data
 
 .idea
+.php-cs-fixer.cache
