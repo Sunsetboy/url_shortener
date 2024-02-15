@@ -9,6 +9,7 @@ services:
         command: symfony serve
         volumes:
             - "./src/app_symfony:/var/www/app_symfony/public_html"
+            - "./src/app_symfony/vendor:/var/www/app_symfony/public_html/vendor:ro"
         networks:
             - internal
 

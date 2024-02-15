@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\KeyRepository;
+use App\Repository\UrlCodeRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: KeyRepository::class)]
+#[ORM\Entity(repositoryClass: UrlCodeRepository::class)]
 #[ORM\Index(name: "is_used", columns: ["is_used"])]
 #[ORM\UniqueConstraint(name: "code", columns: ["code"])]
 
-class Key
+class UrlCode
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

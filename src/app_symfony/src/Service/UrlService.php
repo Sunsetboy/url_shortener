@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Exceptions\EntityNotFoundException;
-use App\Repository\KeyRepository;
+use App\Repository\UrlCodeRepository;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
 class UrlService
 {
     public function __construct(
-        private readonly KeyRepository  $keyRepository,
-        private readonly CacheInterface $cacheInterface,
+        private readonly UrlCodeRepository $keyRepository,
+        private readonly CacheInterface    $cacheInterface,
     ) {
 
     }

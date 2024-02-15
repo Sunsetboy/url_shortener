@@ -2,31 +2,32 @@
 
 namespace App\Repository;
 
-use App\Entity\Key;
+use App\Entity\UrlCode;
 use App\Exceptions\EntityNotFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Key>
+ * @extends ServiceEntityRepository<UrlCode>
  *
- * @method Key|null find($id, $lockMode = null, $lockVersion = null)
- * @method Key|null findOneBy(array $criteria, array $orderBy = null)
- * @method Key[]    findAll()
- * @method Key[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method UrlCode|null find($id, $lockMode = null, $lockVersion = null)
+ * @method UrlCode|null findOneBy(array $criteria, array $orderBy = null)
+ * @method UrlCode[]    findAll()
+ * @method UrlCode[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class KeyRepository extends ServiceEntityRepository
+class UrlCodeRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Key::class);
+        parent::__construct($registry, UrlCode::class);
     }
 
     public function fetchAvailableKey(): string
     {
-        /** @var Key $keyRecord */
+        /** @var UrlCode $keyRecord */
         $keyRecord = $this->createQueryBuilder('k')
             ->andWhere('k.isUsed = 0')
+            ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
         if (!$keyRecord) {
@@ -39,10 +40,10 @@ class KeyRepository extends ServiceEntityRepository
         return $keyRecord->getCode();
     }
 
-    public function saveKey(Key $keyRecord): void
+    public function saveKey(UrlCode $keyRecord): void
     {
         $conn = $this->getEntityManager()->getConnection();
-        $sql = "INSERT INTO `key` (code, is_used) VALUES (:code, :is_used)";
+        $sql = "INSERT INTO `url_code` (code, is_used) VALUES (:code, :is_used)";
         $stmt = $conn->prepare($sql);
         $stmt->bindValue("code", $keyRecord->getCode());
         $stmt->bindValue("is_used", (int)$keyRecord->isIsUsed());

@@ -2,15 +2,18 @@
 
 namespace App\Service;
 
-use App\Entity\Key;
-use App\Repository\KeyRepository;
+use App\Entity\UrlCode;
+use App\Exceptions\UniqueKeyException;
+use App\Repository\UrlCodeRepository;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\Uid\Uuid;
 
 class KeyService
 {
+    const MAX_ATTEMPTS_TO_GENERATE_UNIQUE_CODE = 10;
 
     public function __construct(
-        private readonly KeyRepository $keyRepository,
+        private readonly UrlCodeRepository $keyRepository,
     )
     {
 
@@ -24,14 +27,25 @@ class KeyService
         return $k;
     }
 
-    public function generateAndSaveKey(): Key
+    /**
+     * @throws UniqueKeyException
+     */
+    public function generateAndSaveKey(): UrlCode
     {
-        $key = $this->generateKey(8);
-        $keyRecord = new Key();
-        $keyRecord->setCode($key);
-        $keyRecord->setIsUsed(false);
-        $this->keyRepository->saveKey($keyRecord);
-        return $keyRecord;
+        for ($attempt = 0; $attempt < self::MAX_ATTEMPTS_TO_GENERATE_UNIQUE_CODE; $attempt++) {
+            try {
+                $key = $this->generateKey(8);
+                $keyRecord = new UrlCode();
+                $keyRecord->setCode($key);
+                $keyRecord->setIsUsed(false);
+                $this->keyRepository->saveKey($keyRecord);
+                return $keyRecord;
+            } catch (UniqueConstraintViolationException $uniqueKeyException) {
+                var_dump("Key " . $key . ' exists, attempt ' . $attempt);
+                continue;
+            }
+        }
+        throw new UniqueKeyException('Could not generate unique key');
     }
 
     protected function generateKey(int $length = 8): string
