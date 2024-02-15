@@ -39,6 +39,16 @@ class KeyRepository extends ServiceEntityRepository
         return $keyRecord->getCode();
     }
 
+    public function saveKey(Key $keyRecord): void
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = "INSERT INTO `key` (code, is_used) VALUES (:code, :is_used)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue("code", $keyRecord->getCode());
+        $stmt->bindValue("is_used", (int)$keyRecord->isIsUsed());
+        $stmt->executeQuery();
+    }
+
     //    /**
     //     * @return Key[] Returns an array of Key objects
     //     */
