@@ -9,7 +9,6 @@ services:
         command: symfony serve
         volumes:
             - "./src/app_symfony:/var/www/app_symfony/public_html"
-            - "./src/app_symfony/vendor:/var/www/app_symfony/public_html/vendor:ro"
         networks:
             - internal
 
@@ -41,6 +40,13 @@ services:
             - "./docker/db_sql/data:/var/lib/mysql"
         ports:
             - "3326:3306"
+        networks:
+            - internal
+
+    k6:
+        image: grafana/k6
+        volumes:
+            - ./src/k6:/app
         networks:
             - internal
 
