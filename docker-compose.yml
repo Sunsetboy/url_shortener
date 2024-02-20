@@ -28,6 +28,8 @@ services:
     key_storage:
         image: redis:7.0-alpine
         container_name: redis
+        ports:
+            - 16379:6379
         networks:
             - internal
 
