@@ -24,7 +24,7 @@ func (m *MysqlDBRepo) Connection() *sql.DB {
 func (m *MysqlDBRepo) FetchAvailableCode() (string, error) {
 	var code string
 	var id int64
-	row := m.DB.QueryRow("SELECT id, code FROM url_code WHERE is_used = 0")
+	row := m.DB.QueryRow("SELECT id, code FROM url_code WHERE is_used = 0 limit 1")
 	if err := row.Scan(&id, &code); err != nil {
 		if err == sql.ErrNoRows {
 			return "", fmt.Errorf("no short URL codes available")

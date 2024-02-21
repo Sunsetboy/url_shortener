@@ -70,6 +70,7 @@ func (app *application) AddUrl(w http.ResponseWriter, r *http.Request) {
 	response := addUrlResponse{
 		ShortUrl: shortUrlCode,
 	}
+
 	_ = app.writeJSON(w, http.StatusOK, response)
 }
 
