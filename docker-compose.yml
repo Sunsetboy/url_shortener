@@ -15,7 +15,7 @@ services:
     app_go:
         container_name: app_go
         ports:
-            - "8082:8082"
+            - "8082:8088"
         build:
             context: src/app_go
         env_file:
