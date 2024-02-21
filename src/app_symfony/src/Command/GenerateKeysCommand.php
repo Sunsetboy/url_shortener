@@ -32,8 +32,11 @@ class GenerateKeysCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Generating random keys');
+        $startTs = microtime(true);
         $keysGenerated = $this->keyService->generateAndSaveKeys($input->getArgument('keysNumber'));
-        $output->writeln('Keys generated: '. $keysGenerated);
+        $finishTs = microtime(true);
+        $duration = round($finishTs - $startTs, 3);
+        $output->writeln('Keys generated: '. $keysGenerated . ' in ' . $duration . 's');
         return Command::SUCCESS;
     }
 }

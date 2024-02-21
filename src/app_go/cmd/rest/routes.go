@@ -16,6 +16,7 @@ func (app *application) routes() http.Handler {
 	mux.Use(app.enableCORS)
 
 	mux.Post("/api/url", app.AddUrl)
+	mux.Post("/api/generate-codes", app.GenerateCodes)
 	mux.Get("/{shortUrl:[a-zA-Z0-9]{8}}", app.RedirectToUrl)
 
 	return mux

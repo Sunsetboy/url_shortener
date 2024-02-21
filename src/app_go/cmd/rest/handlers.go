@@ -77,3 +77,13 @@ func (app *application) AddUrl(w http.ResponseWriter, r *http.Request) {
 func (app *application) generateUrlCacheKey(shortUrl string) string {
 	return fmt.Sprintf("url_%s", shortUrl)
 }
+
+func (app *application) GenerateCodes(w http.ResponseWriter, r *http.Request) {
+	generatedCodesCount, err := app.DB.GenerateUrlCodes(10000)
+	if err != nil {
+		log.Println(err)
+		app.writeJSON(w, http.StatusInternalServerError, "Could not generate codes")
+		return
+	}
+	app.writeJSON(w, http.StatusOK, fmt.Sprintf("Codes generated: %d", generatedCodesCount))
+}
