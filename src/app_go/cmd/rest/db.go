@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"log"
+	"time"
 )
 
 func openDB(dsn string) (*sql.DB, error) {
@@ -18,6 +19,7 @@ func openDB(dsn string) (*sql.DB, error) {
 }
 
 func (app *application) connectToDB() (*sql.DB, error) {
+	time.Sleep(time.Second * 5)
 	connection, err := openDB(app.DSN)
 	if err != nil {
 		return nil, err

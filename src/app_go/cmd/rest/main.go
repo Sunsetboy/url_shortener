@@ -18,19 +18,19 @@ type application struct {
 	Redis *redis.Client
 }
 
-const port = 8088
-
 func main() {
 	godotenv.Load()
 	// set up an app config
 	app := application{}
 
+	port := os.Getenv("PORT")
+
 	dbConfig := mysql.Config{
-		User:                 os.Getenv("DB_USER"),
-		Passwd:               os.Getenv("DB_PASS"),
+		User:                 os.Getenv("MYSQL_USER"),
+		Passwd:               os.Getenv("MYSQL_PASSWORD"),
 		Net:                  "tcp",
-		Addr:                 fmt.Sprintf("%s:%s", os.Getenv("DB_HOST"), os.Getenv("DB_PORT")),
-		DBName:               os.Getenv("DB_NAME"),
+		Addr:                 fmt.Sprintf("%s:%s", os.Getenv("MYSQL_HOST"), os.Getenv("MYSQL_PORT")),
+		DBName:               os.Getenv("MYSQL_DATABASE"),
 		AllowNativePasswords: true,
 		ParseTime:            true,
 	}
@@ -61,10 +61,10 @@ func main() {
 	mux := app.routes()
 
 	// print out a message
-	log.Printf("starting server port %d", port)
+	log.Printf("starting server port %s", port)
 
 	// start the server
-	err = http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
+	err = http.ListenAndServe(fmt.Sprintf(":%s", port), mux)
 	if err != nil {
 		log.Fatal(err)
 	}
