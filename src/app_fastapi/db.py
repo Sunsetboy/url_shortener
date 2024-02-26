@@ -3,12 +3,14 @@ import redis
 import json
 from mysql.connector import connect, Error
 
-dbConn = connect(
-    host=os.getenv("MYSQL_HOST"),
-    user=os.getenv("MYSQL_USER"),
-    password=os.getenv("MYSQL_PASSWORD"),
-    database=os.getenv("MYSQL_DATABASE"),
-)
+
+def connect_to_db():
+    return connect(
+        host=os.getenv("MYSQL_HOST"),
+        user=os.getenv("MYSQL_USER"),
+        password=os.getenv("MYSQL_PASSWORD"),
+        database=os.getenv("MYSQL_DATABASE"),
+    )
 
 
 r = redis.Redis(
@@ -17,6 +19,7 @@ r = redis.Redis(
 
 
 def fetchAvailableCode():
+    dbConn = connect_to_db()
     try:
         find_one_code_query = "SELECT id, code FROM url_code WHERE is_used = 0 limit 1"
         with dbConn.cursor() as cursor:
@@ -35,6 +38,8 @@ def fetchAvailableCode():
                 raise Exception("No available short URLs")
     except Error as e:
         raise Exception("Could not get short URL")
+    finally:
+        dbConn.close()
 
     return code
 

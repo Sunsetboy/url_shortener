@@ -15,7 +15,7 @@ def read_root():
 
 
 @app.get("/{short_url}", status_code=302)
-def redirect_to_long_url(short_url: str):
+async def redirect_to_long_url(short_url: str):
     long_url = url_service.findLongUrlByShort(short_url)
     if not long_url:
         raise HTTPException(
@@ -25,9 +25,14 @@ def redirect_to_long_url(short_url: str):
 
 
 @app.post("/api/url")
-def add_url(url_request: UrlRequest):
-    short_url = url_service.fetchAvailableUrlCode()
+async def add_url(url_request: UrlRequest):
+    try:
+        short_url = url_service.fetchAvailableUrlCode()
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=str(e)
+        )
     if short_url:
         url_service.saveUrls(url_request.url, short_url)
 
-    return {"url": short_url}
+    return {"short_url": short_url}
