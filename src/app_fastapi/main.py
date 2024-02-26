@@ -23,12 +23,14 @@ def redirect_to_long_url(short_url: str):
         )
     return RedirectResponse(
         url = long_url,
-        status = 302
+        status_code = 302
     )
 
 
 @app.post("/api/url")
 def add_url(url_request: UrlRequest):
     short_url = url_service.fetchAvailableUrlCode()
-    
+    if short_url:
+        url_service.saveUrls(url_request.url, short_url)
+
     return {"url": short_url} 
