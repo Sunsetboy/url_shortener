@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     && pecl install redis \
     && docker-php-ext-enable redis
 
-RUN pecl install xdebug-3.2.0 && docker-php-ext-enable xdebug
+# RUN pecl install xdebug-3.2.0 && docker-php-ext-enable xdebug
 
 
 RUN docker-php-ext-configure intl
