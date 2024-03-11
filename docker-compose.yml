@@ -66,6 +66,17 @@ services:
         networks:
             - internal
 
+    postgres:
+        image: 'postgres:16.2-alpine'
+        env_file:
+            - "./env/postgres.env"
+        volumes:
+            - "./docker/db_postgres/data:/var/lib/postgresql/data"
+        ports:
+            - '15432:5432'
+        networks:
+            - internal
+
     k6:
         image: grafana/k6
         volumes:

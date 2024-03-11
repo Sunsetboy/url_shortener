@@ -1,4 +1,5 @@
 docker/db_sql/data
+docker/db_postgres/data
 
 .idea
 .php-cs-fixer.cache
