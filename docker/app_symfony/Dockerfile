@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     git \
     iputils-ping \
     mariadb-server \
+    libpq-dev \
     libxslt-dev \
     libicu-dev \
     libmcrypt-dev \
@@ -15,7 +16,7 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     && rm -r /var/lib/apt/lists/* \
     && docker-php-ext-install opcache \
-    && docker-php-ext-install -j$(nproc) iconv mbstring mysqli pdo_mysql zip pcntl \
+    && docker-php-ext-install -j$(nproc) iconv mbstring mysqli pdo pdo_mysql pdo_pgsql zip pcntl \
     && pecl install redis \
     && docker-php-ext-enable redis
 
