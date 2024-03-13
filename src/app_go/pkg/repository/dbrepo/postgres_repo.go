@@ -10,7 +10,7 @@ import (
 
 const CODE_GENERATION_ATTEMPTS = 10
 
-type MysqlDBRepo struct {
+type PostgresDBRepo struct {
 	DB *sql.DB
 }
 
@@ -23,30 +23,30 @@ type DatabaseRepo interface {
 	// FetchLastUserLogins(userIds []int, companyId int, limit int) ([]data.UserLogin, error)
 }
 
-func (m *MysqlDBRepo) Connection() *sql.DB {
+func (m *PostgresDBRepo) Connection() *sql.DB {
 	return m.DB
 }
 
-func (m *MysqlDBRepo) FetchAvailableCode() (string, error) {
+func (m *PostgresDBRepo) FetchAvailableCode() (string, error) {
 	var code string
-	var id int64
-	row := m.DB.QueryRow("SELECT id, code FROM url_code WHERE is_used = 0 limit 1")
-	if err := row.Scan(&id, &code); err != nil {
+
+
+	row := m.DB.QueryRow(`UPDATE url_code
+	SET is_used=1
+	WHERE id IN (select id from url_code where is_used=0 limit 1)
+	RETURNING code`)
+	
+	if err := row.Scan(&code); err != nil {
 		if err == sql.ErrNoRows {
-			return "", fmt.Errorf("no short URL codes available")
+				return "", fmt.Errorf("no short URL codes available")
+			}
+			return "", fmt.Errorf("could not fetch available URL code: %v", err)
 		}
-		return "", fmt.Errorf("could not fetch available URL code: %v", err)
-	}
-	// flag the short URL code as used
-	_, err := m.DB.Exec("UPDATE url_code SET is_used = 1 WHERE id = ? AND is_used = 0", id)
-	if err != nil {
-		return "", fmt.Errorf("could not update short URL record: %v", err)
-	}
 
 	return code, nil
 }
 
-func (m *MysqlDBRepo) GenerateUrlCodes(codesCount int) (int, error) {
+func (m *PostgresDBRepo) GenerateUrlCodes(codesCount int) (int, error) {
 	var codesGeneratedCount = 0
 	for i := 0; i < codesCount; i++ {
 		err := m.GenerateAndSaveOneCode(8)
@@ -59,7 +59,7 @@ func (m *MysqlDBRepo) GenerateUrlCodes(codesCount int) (int, error) {
 	return codesGeneratedCount, nil
 }
 
-func (m *MysqlDBRepo) GenerateAndSaveOneCode(length int) error {
+func (m *PostgresDBRepo) GenerateAndSaveOneCode(length int) error {
 	for i := 0; i < CODE_GENERATION_ATTEMPTS; i++ {
 		uuidBase58String, err := generateRandomCode(length)
 		if err != nil {

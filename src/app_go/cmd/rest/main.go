@@ -8,7 +8,6 @@ import (
 	repository "url_shortener/pkg/repository/dbrepo"
 
 	"github.com/go-redis/redis"
-	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 )
 
@@ -25,16 +24,16 @@ func main() {
 
 	port := os.Getenv("PORT")
 
-	dbConfig := mysql.Config{
-		User:                 os.Getenv("MYSQL_USER"),
-		Passwd:               os.Getenv("MYSQL_PASSWORD"),
-		Net:                  "tcp",
-		Addr:                 fmt.Sprintf("%s:%s", os.Getenv("MYSQL_HOST"), os.Getenv("MYSQL_PORT")),
-		DBName:               os.Getenv("MYSQL_DATABASE"),
-		AllowNativePasswords: true,
-		ParseTime:            true,
-	}
-	app.DSN = dbConfig.FormatDSN()
+	// dbConfig := mysql.Config{
+	// 	User:                 os.Getenv("POSTGRES_USER"),
+	// 	Passwd:               os.Getenv("POSTGRES_PASSWORD"),
+	// 	Net:                  "tcp",
+	// 	Addr:                 fmt.Sprintf("%s:%s", os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_PORT")),
+	// 	DBName:               os.Getenv("POSTGRES_DATABASE"),
+	// 	AllowNativePasswords: true,
+	// 	ParseTime:            true,
+	// }
+	app.DSN = os.Getenv("POSTGRES_DSN")
 
 	conn, err := app.connectToDB()
 	if err != nil {
@@ -42,7 +41,7 @@ func main() {
 	}
 	defer conn.Close()
 
-	app.DB = &repository.MysqlDBRepo{DB: conn}
+	app.DB = &repository.PostgresDBRepo{DB: conn}
 
 	// connect to Redis
 	redisClient := redis.NewClient(&redis.Options{
