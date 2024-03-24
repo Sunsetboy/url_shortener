@@ -22,7 +22,6 @@ services:
         build:
             context: src/app_go
         env_file:
-            - "./env/sql.env"
             - "./env/redis.env"
             - "./env/postgres.env"
         volumes:
@@ -40,7 +39,6 @@ services:
         build:
             context: src/app_fastapi
         env_file:
-            - "./env/sql.env"
             - "./env/redis.env"
             - "./env/postgres.env"
         volumes:
@@ -56,26 +54,14 @@ services:
         networks:
             - internal
 
-    sql:
-        build:
-            context: docker/db_sql
-        env_file:
-            - "./env/sql.env"
-        volumes:
-            - "./docker/db_sql/data:/var/lib/mysql"
-        ports:
-            - "3326:3306"
-        networks:
-            - internal
-
     postgres:
-        image: 'postgres:16.2-alpine'
+        image: "postgres:16.2-alpine"
         env_file:
             - "./env/postgres.env"
         volumes:
             - "./docker/db_postgres/data:/var/lib/postgresql/data"
         ports:
-            - '15432:5432'
+            - "15432:5432"
         networks:
             - internal
 
