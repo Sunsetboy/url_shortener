@@ -24,26 +24,27 @@ class UrlCodeRepository extends ServiceEntityRepository
 
     public function fetchAvailableKey(): string
     {
-        /** @var UrlCode $keyRecord */
-        $keyRecord = $this->createQueryBuilder('k')
-            ->andWhere('k.isUsed = 0')
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
-        if (!$keyRecord) {
+        $connection = $this->getEntityManager()->getConnection();
+        $code = $connection->prepare(
+                'UPDATE url_code
+                    SET is_used=1
+                    WHERE id IN (select id from url_code where is_used=0 limit 1)
+                    RETURNING code'
+            )
+            ->executeQuery()
+            ->fetchOne();
+
+        if (!$code) {
             throw new EntityNotFoundException('No available keys');
         }
-        $keyRecord->setIsUsed(1);
-        $this->getEntityManager()->persist($keyRecord);
-        $this->getEntityManager()->flush();
 
-        return $keyRecord->getCode();
+        return $code;
     }
 
     public function saveKey(UrlCode $keyRecord): void
     {
         $conn = $this->getEntityManager()->getConnection();
-        $sql = "INSERT INTO `url_code` (code, is_used) VALUES (:code, :is_used)";
+        $sql = 'INSERT INTO "url_code" (code, is_used) VALUES (:code, :is_used)';
         $stmt = $conn->prepare($sql);
         $stmt->bindValue("code", $keyRecord->getCode());
         $stmt->bindValue("is_used", (int)$keyRecord->isIsUsed());

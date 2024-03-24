@@ -1,16 +1,18 @@
 import os
 import redis
 import json
-from mysql.connector import connect, Error
+import psycopg2
+from psycopg2 import sql
 
 
 def connect_to_db():
-    return connect(
-        host=os.getenv("MYSQL_HOST"),
-        user=os.getenv("MYSQL_USER"),
-        password=os.getenv("MYSQL_PASSWORD"),
-        database=os.getenv("MYSQL_DATABASE"),
+    conn = psycopg2.connect(
+        host = os.getenv("POSTGRES_HOST"),
+        user = os.getenv("POSTGRES_USER"),
+        password = os.getenv("POSTGRES_PASSWORD"),
+        database = os.getenv("POSTGRES_DB"),
     )
+    return conn
 
 
 r = redis.Redis(
@@ -20,28 +22,33 @@ r = redis.Redis(
 
 def fetchAvailableCode():
     dbConn = connect_to_db()
+    query = """
+        UPDATE url_code
+        SET is_used = 1
+        WHERE id IN (
+            SELECT id FROM url_code
+            WHERE is_used = 0
+            LIMIT 1
+        )
+        RETURNING code
+    """
     try:
-        find_one_code_query = "SELECT id, code FROM url_code WHERE is_used = 0 limit 1"
         with dbConn.cursor() as cursor:
-            cursor.execute(find_one_code_query)
+            cursor.execute(query)
             urlCodeResult = cursor.fetchone()
-
-            if urlCodeResult:
-                id, code = urlCodeResult
-
-                flag_code_used_query = (
-                    "UPDATE url_code SET is_used = 1 WHERE id = %s AND is_used = 0"
-                )
-                cursor.execute(flag_code_used_query, (id,))
-                dbConn.commit()
-            else:
-                raise Exception("No available short URLs")
-    except Error as e:
-        raise Exception("Could not get short URL")
+            dbConn.commit()
+            if not urlCodeResult:
+                raise Exception("No available short URLs") 
+    except (Exception, psycopg2.DatabaseError) as error:
+        raise Exception("Could not fetch available URL") 
     finally:
-        dbConn.close()
+        # Closing the cursor & connection
+        if cursor:
+            cursor.close()
+        if dbConn:
+            dbConn.close()
 
-    return code
+    return urlCodeResult[0]
 
 
 def saveUrlsInRedis(key, value):

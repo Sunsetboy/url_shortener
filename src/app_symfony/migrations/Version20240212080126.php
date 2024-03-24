@@ -20,7 +20,7 @@ final class Version20240212080126 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE url ADD CONSTRAINT FK_F47645AEA76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
+        $this->addSql('ALTER TABLE "url" ADD CONSTRAINT FK_F47645AEA76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id)');
         $this->addSql('CREATE INDEX IDX_F47645AEA76ED395 ON url (user_id)');
     }
 
