@@ -3,6 +3,7 @@ import json
 
 def fetchAvailableUrlCode()->str:
     short_url_code = db.fetchAvailableCode()
+    print(f"{short_url_code=}")
     return short_url_code
 
 def saveUrls(long_url, short_url):
