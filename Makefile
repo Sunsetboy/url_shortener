@@ -15,3 +15,6 @@ load_test_go:
 
 load_test_fastapi:
 	docker-compose run --rm k6 run /app/test_fastapi.js
+
+generate_codes:
+	docker-compose run app_symfony bin/console app:generate-keys 10000
